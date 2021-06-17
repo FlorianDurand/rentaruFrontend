@@ -1,14 +1,20 @@
 /* eslint-disable prettier/prettier */
 import Head from "next/head";
-import Link from "next/link";
-import Button from "../elements/Button";
 import Dropdown from "../elements/DropDown";
 import { useEffect, useState } from "react";
 import { getFaqPage } from "../utils/api";
-import { getStrapiMedia } from "../utils/medias";
 
-const Faq = ({faq}) => {
-  const [selectedIndex, setSelectedIndex] = useState(0)
+const Faq = () => {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [faq, setFaq] = useState()
+
+  useEffect(() => {
+    getFaqPage().then((resp) => {
+      setFaq(resp)
+    })
+  }, [])
+
+  if (!faq) return 'Loading.....'
   return (
     <div>
       <Head>
@@ -38,10 +44,5 @@ const Faq = ({faq}) => {
     </div>
   );
 };
-
-export async function getStaticProps() {
-  const faq = await getFaqPage();
-  return { props: { faq } };
-}
 
 export default Faq;
