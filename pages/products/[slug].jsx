@@ -393,6 +393,10 @@ export async function getStaticProps({ params }) {
   const product = await getProduct(params.slug);
   const productsCategory = await getProductsByCategory(product.categories);
   const productsTitle = await getProductsByTitle(product.title);
+  if (!product) return {  redirect: {
+    destination: '/404',
+    permanent: false
+  }}
   return { props: { productSlug : params.slug, productsCategory, productsTitle } };
 }
 
@@ -404,6 +408,6 @@ export async function getStaticPaths() {
         params: { slug: _product.slug },
       };
     }),
-    fallback: true,
+    fallback: false,
   };
 }

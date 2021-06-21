@@ -144,7 +144,10 @@ export default ProductPage;
 
 export async function getStaticProps({ params }) {
   const product = await getProduct(params.slug);
-
+  if (!product) return {  redirect: {
+    destination: '/404',
+    permanent: false
+  }}
   return { props: { product } };
 }
 
@@ -156,6 +159,6 @@ export async function getStaticPaths() {
         params: { slug: _product.slug },
       };
     }),
-    fallback: true,
+    fallback: false,
   };
 }

@@ -488,6 +488,10 @@ export default MangaPage;
 export async function getStaticProps({ params }) {
   const manga = await getManga(params.id);  
   const products = await getProductsByTitle(manga.title);
+  if (!products || !manga) return {  redirect: {
+    destination: '/404',
+    permanent: false
+  }}
   return { props: { manga, products } };
 }
 
@@ -499,7 +503,7 @@ export async function getStaticPaths() {
         params: { id: _manga.id.toString() },
       };
     }),
-    fallback: true,
+    fallback: false,
   };
 }
 

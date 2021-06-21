@@ -13,7 +13,7 @@ const UserPage = ({ user }) => {
   if (router.isFallback) {
     return <div>Loading user...</div>;
   }
-
+  
 
   const [windowWidth, setWindowWidth] = useState(1281);
   const [memberSince, setMemberSince] = useState('');
@@ -115,8 +115,7 @@ const UserPage = ({ user }) => {
           </div>
           <div className="description">
             <p className='title'>Description</p>
-            <p className='descriptionContent'>{user.description}</p>
-           {console.log(user.description)}
+            <p className='descriptionContent' dangerouslySetInnerHTML={{__html: user.description}}></p>
           </div>
           {windowWidth >= 600 &&
             <div className="top">
@@ -155,6 +154,10 @@ export default UserPage;
 
 export async function getStaticProps({ params }) {
   const user = await getUser(params.id);
+  if (!user) return {  redirect: {
+    destination: '/404',
+    permanent: true
+  }}
   return { props: { user } };
 }
 
@@ -166,6 +169,6 @@ export async function getStaticPaths() {
         params: { id: _user.id.toString() },
       };
     }),
-    fallback: true,
+    fallback: false,
   };
 }

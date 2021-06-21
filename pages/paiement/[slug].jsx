@@ -226,6 +226,10 @@ export default PaiementPage;
 
 export async function getStaticProps({ params }) {
   const product = await getProduct(params.slug);
+  if (!product) return {  redirect: {
+    destination: '/404',
+    permanent: false
+  }}
   const stripeKey = process.env.STRIPE_PK
   return { props: { product, stripeKey } };
 }
@@ -238,6 +242,6 @@ export async function getStaticPaths() {
         params: { slug: _product.slug },
       };
     }),
-    fallback: true,
+    fallback: false,
   };
 }
