@@ -3,9 +3,12 @@ import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import emailjs from 'emailjs-com'
+import ReCAPTCHA from "react-google-recaptcha";
+import { useRef } from "react";
 
-const Contact = ({apiKeys}) => {
+const Contact = ({apiKeys, captchaKey}) => {
 
+  const recaptchaRef = useRef(null);
   
   const [lastName, setLastName] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -13,6 +16,7 @@ const Contact = ({apiKeys}) => {
   const [object, setObject] = useState('');
   const [message, setMessage] = useState('');
   const [submitMessage, setSubmitMessage] = useState('')
+  const [captchaValidated, setCaptchaValidated] = useState(false);
 
   useEffect(() => {
     const form = document.querySelector('.form')
@@ -38,6 +42,8 @@ const Contact = ({apiKeys}) => {
     setMail('');
     setObject('');
     setMessage('');
+    setCaptchaValidated(false)
+    recaptchaRef.current.reset()
   }
 
   return (
@@ -60,7 +66,13 @@ const Contact = ({apiKeys}) => {
             </div>
           </div>
           <textarea name={'message'} value={message} onChange={(e) => setMessage(e.target.value)} placeholder='Message'></textarea>
-          <input type='submit' className="submit" value='Envoyer'></input>
+          <ReCAPTCHA
+            sitekey={captchaKey}
+            onChange={() => setCaptchaValidated(true)}
+            theme="dark"
+            ref={recaptchaRef}
+          />
+          <input type='submit' className="submit" value='Envoyer' disabled={!captchaValidated}></input>
         </form>
       </div>
     </div>
@@ -72,7 +84,8 @@ export async function getStaticProps() {
   apiKeys.SERVICE_ID = process.env.APIKEYS_SERVICE_ID;
   apiKeys.TEMPLATE_ID = process.env.APIKEYS_TEMPLATE_ID;
   apiKeys.USER_ID = process.env.APIKEYS_USER_ID;
-  return { props: { apiKeys } };
+  const captchaKey = process.env.RECAPTCHA_GOOGLE_KEY;
+  return { props: { apiKeys, captchaKey } };
 }
 
 export default Contact;
